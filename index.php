@@ -1,89 +1,71 @@
 <?php
-abstract class Delivery {
-    abstract public function MachineSelection($car);
 
-    public function delivery($car) {
-        $order = $this->MachineSelection($car);
-    }
+class Contact {
+    public string $name;
+    public string $surname;
+    public string $email;
+    public int $phone;
+    public string $address;
+
+    public function __construct() {}
 }
-class Economy extends Delivery {
+interface ContactBuilder {
+    public function setName();
+    public function setSurname();
+    public function setEmail();
+    public function setPhone();
+    public function setAddress();
+    public function getContact();
+}
+class YourContact implements ContactBuilder {
 
-   private int $price;
-   private string $brand;
-
-   public function __construct(int $price, string $brand) {
-       $this->price = $price;
-       $this->brand = $brand;
-   }
-
-    public function MachineSelection($car): Economy
+    private $contact;
+    public function __construct(Contact $contact)
     {
-       return new Economy ($this->price, $this->brand);
+        $this->contact = $contact;
     }
-}
-
-class Standard extends Delivery {
-    private int $price;
-    private string $brand;
-
-    public function __construct(int $price, string $brand) {
-        $this->price = $price;
-        $this->brand = $brand;
-    }
-
-    public function MachineSelection($car): Economy
+    public function setName(): static
     {
-        return new Economy ($this->price, $this->brand);
+        $this->contact->name = "John";
+        return $this;
     }
-}
-
-class Luxury extends Delivery {
-    private int $price;
-    private string $brand;
-
-    public function __construct(int $price, string $brand) {
-        $this->price = $price;
-        $this->brand = $brand;
-    }
-
-    public function MachineSelection($car): Economy
+    public function setSurname(): static
     {
-        return new Economy ($this->price, $this->brand);
+        $this->contact->surname = "Surname";
+        return $this;
     }
-}
-interface CompleteTheOrder {
-
-    public function order(): string;
-}
-class Economy implements CompleteTheOrder {
-
-    public function order(): string
+    public function setEmail(): static
     {
-        return "{Complete the order}";
+        $this->contact->email = "john@email.com";
+        return $this;
     }
-}
-class Standard implements CompleteTheOrder {
-
-    public function order(): string
+    public function setPhone(): static
     {
-        return "{Complete the order}";
+        $this->contact->phone = "098745213";
+        return $this;
     }
-}
-class Luxury implements CompleteTheOrder {
-
-    public function order(): string
+    public function setAddress(): static
     {
-        return "{Complete the order}";
+        $this->contact->address = "Some address";
+        return $this;
+    }
+    public function getContact(): Contact
+    {
+        return $this->contact;
     }
 }
- function clientCode (Delivery $car)
- {
-     $car->MachineSelection($car);
- }
+class ContactDirector{
+    public function build(ContactBuilder $builder) {
+        $builder->setName()
+       ->setSurname()
+       ->setEmail()
+        ->setPhone()
+        ->setAddress();
+        return $builder->getContact();
+    }
+}
 
- clientCode(new Economy());
+$YourContact = (new ContactDirector())->build(new YourContact(new Contact()));
 
-clientCode(new Standard());
 
-clientCode(new Luxury());
 
